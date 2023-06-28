@@ -13,7 +13,7 @@ const createUser = (req, res) => {
         return res.status(400).send("Переданы некорректные данные при создании пользователя.");
       }
       else {
-        return res.status(500).send("Произошла ошибка");
+        return res.status(500).send(`message:Произошла ошибка ${err}"`);
       }
     })
 }
@@ -29,7 +29,7 @@ const getUsers = (req, res) => {
         return res.status(400).send("Переданы некорректные данные при создании пользователя.");
       }
       else {
-        return res.status(500).send("Произошла ошибка");
+        return res.status(500).send(`message:Произошла ошибка ${err}"`);
       }
     })
 }
@@ -47,7 +47,7 @@ const getUser = (req, res) => {
         return res.status(404).send("Пользователь по указанному _id не найден.");
       }
       else {
-        return res.status(500).send("Произошла ошибка");
+        return res.status(500).send(`message:Произошла ошибка ${err}"`);
       }
     })
 }
@@ -68,7 +68,7 @@ const patchUser = (req, res) => {
         return res.status(400).send("Переданы некорректные данные при создании пользователя.");
       }
       else {
-        return res.status(500).send("Произошла ошибка");
+        return res.status(500).send(`message:Произошла ошибка ${err}"`);
       }
     })
 }
@@ -89,7 +89,7 @@ const patchUserAvatar = (req, res) => {
         return res.status(400).send("Переданы некорректные данные при создании пользователя.");
       }
       else {
-        return res.status(500).send("Произошла ошибка");
+        return res.status(500).send(`message:Произошла ошибка ${err}"`);
       }
     })
 }

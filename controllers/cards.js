@@ -11,10 +11,10 @@ const createCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send("Переданы некорректные данные при создании карточки.");
+        return res.status(400).send(`message: Переданы некорректные данные при создании карточки.`);
       }
       else {
-        return res.status(500).send("Произошла ошибка");
+        return res.status(500).send(`message:Произошла ошибка ${err}"`);
       }
     })
 }
@@ -27,10 +27,10 @@ const getCards = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send("Переданы некорректные данные при создании карточки.");
+        return res.status(400).send(`message: Переданы некорректные данные при создании карточки.`);
       }
       else {
-        return res.status(500).send("Произошла ошибка");
+       return res.status(500).send(`message:Произошла ошибка ${err}"`);
       }
     })
 }
@@ -42,14 +42,14 @@ const deleteCard = (req, res) => {
   Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
-        return res.status('Карточка с указанным _id не найдена.');
+        return res.status(`message: Переданы некорректные данные при создании карточки.`);
       }
       else {
         res.send(card);
       }
     })
-    .catch(() => {
-      return res.status(500).send("Произошла ошибка");
+    .catch((err) => {
+     return res.status(500).send(`message:Произошла ошибка ${err}"`);
     })
 }
 
@@ -71,7 +71,7 @@ const putLikeCard = (req, res) => {
         return res.status(400).send(`Произошла ошибка: ${err.name} Переданы некорректные данные для постановки/снятии лайка.`);
       }
       else {
-        return res.status(500).send("Произошла ошибка");
+       return res.status(500).send(`message:Произошла ошибка ${err}"`);
       }
     })
 }
@@ -91,10 +91,10 @@ const deleteLikeCard = (req, res) => {
         return res.status(404).send(`Произошла ошибка: ${err.name} Передан несуществующий _id карточки.`);
       }
       else if (err.name === 'ValidationError') {
-        return res.status(400).send("Переданы некорректные данные для постановки/снятии лайка.");
+        return res.status(400).send(`message: Переданы некорректные данные при создании карточки.`);
       }
       else {
-        return res.status(500).send("Произошла ошибка");
+       return res.status(500).send(`message:Произошла ошибка ${err}"`);
       }
     })
 }
