@@ -61,9 +61,6 @@ const patchUser = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Карточка не найдена'});
-      }
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Карточка не найдена'});
       }
@@ -82,11 +79,8 @@ const patchUserAvatar = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(404).send("Пользователь по указанному _id не найден.");
-      }
-      else if (err.name === 'ValidationError') {
-        return res.status(400).send("Переданы некорректные данные при создании пользователя.");
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Карточка не найдена'});
       }
       else {
         return res.status(500).send(`message:Произошла ошибка ${err}"`);

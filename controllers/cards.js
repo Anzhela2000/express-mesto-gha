@@ -42,7 +42,7 @@ const deleteCard = (req, res) => {
   Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
-        return res.status({ message: 'Карточка не найдена'});
+        return res.status(400)({ message: 'Карточка не найдена'});
       }
       else {
         res.send(card);
@@ -67,7 +67,7 @@ const putLikeCard = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(404).send(`Произошла ошибка: ${err.name} Передан несуществующий _id карточки.`);
       }
-      else if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         return res.status(400).send(`Произошла ошибка: ${err.name} Переданы некорректные данные для постановки/снятии лайка.`);
       }
       else {
@@ -90,7 +90,7 @@ const deleteLikeCard = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(404).send(`Произошла ошибка: ${err.name} Передан несуществующий _id карточки.`);
       }
-      else if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Карточка не найдена'});
       }
       else {
