@@ -13,7 +13,7 @@ const createUser = (req, res) => {
         return res.status(400).send({ message: 'Карточка не найдена'});
       }
       else {
-        return res.status(500).send(`message:Произошла ошибка ${err}"`);
+        return res.status(500).send(`message:Произошла ошибка ${err}`);
       }
     })
 }
@@ -29,7 +29,7 @@ const getUsers = (req, res) => {
         return res.status(400).send("Переданы некорректные данные при создании пользователя.");
       }
       else {
-        return res.status(500).send(`message:Произошла ошибка ${err}"`);
+        return res.status(500).send(`message:Произошла ошибка ${err}`);
       }
     })
 }
@@ -47,7 +47,7 @@ const getUser = (req, res) => {
         return res.status(404).send("Пользователь по указанному _id не найден.");
       }
       else {
-        return res.status(500).send(`message:Произошла ошибка ${err}"`);
+        return res.status(500).send(`message:Произошла ошибка ${err}`);
       }
     })
 }
@@ -65,7 +65,7 @@ const patchUser = (req, res) => {
         return res.status(400).send({ message: 'Карточка не найдена'});
       }
       else {
-        return res.status(500).send(`message:Произошла ошибка ${err}"`);
+        return res.status(500).send(`message:Произошла ошибка ${err}`);
       }
     })
 }
@@ -74,7 +74,7 @@ const patchUserAvatar = (req, res) => {
 
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar },{ new: true })
     .then((user) => {
       res.send(user);
     })
@@ -83,7 +83,7 @@ const patchUserAvatar = (req, res) => {
         return res.status(400).send({ message: 'Карточка не найдена'});
       }
       else {
-        return res.status(500).send(`message:Произошла ошибка ${err}"`);
+        return res.status(500).send(`message:Произошла ошибка ${err}`);
       }
     })
 }
