@@ -13,7 +13,7 @@ const createUser = (req, res) => {
         return res.status(400).send({ message: 'Карточка не найдена'});
       }
       else {
-        return res.status(500).send(`message:Произошла ошибка ${err}`);
+        return res.status(500).send({ message: 'Карточка не найдена'});
       }
     })
 }
@@ -26,10 +26,10 @@ const getUsers = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send("Переданы некорректные данные при создании пользователя.");
+        return res.status(400).send({ message: 'Карточка не найдена'});
       }
       else {
-        return res.status(500).send(`message:Произошла ошибка ${err}`);
+        return res.status(500).send({ message: 'Карточка не найдена'});
       }
     })
 }
@@ -40,14 +40,15 @@ const getUser = (req, res) => {
 
   User.findById(userId)
     .then((user) => {
-      res.send(user);
+      if (user) return res.send({ user });
+      return res.status(404).send({ message: 'Не найдено'});
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(404).send("Пользователь по указанному _id не найден.");
+        return res.status(400).send({ message: 'Не найдено'});
       }
       else {
-        return res.status(500).send(`message:Произошла ошибка ${err}`);
+        return res.status(500).send({ message: 'Некорректно'});
       }
     })
 }
@@ -56,7 +57,7 @@ const patchUser = (req, res) => {
 
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(req.user._id, { name, about },{ new: true })
     .then((user) => {
       res.send(user);
     })
@@ -65,7 +66,7 @@ const patchUser = (req, res) => {
         return res.status(400).send({ message: 'Карточка не найдена'});
       }
       else {
-        return res.status(500).send(`message:Произошла ошибка ${err}`);
+        return res.status(500).send({ message: 'Карточка не найдена'});
       }
     })
 }
@@ -83,7 +84,7 @@ const patchUserAvatar = (req, res) => {
         return res.status(400).send({ message: 'Карточка не найдена'});
       }
       else {
-        return res.status(500).send(`message:Произошла ошибка ${err}`);
+        return res.status(500).send({ message: 'Карточка не найдена'});
       }
     })
 }
