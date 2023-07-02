@@ -42,7 +42,10 @@ const deleteCard = (req, res) => {
   Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
-        return res.status(400)({ message: 'Карточка не найдена'});
+        res
+      .status(400)
+      .send({ message: 'Невалидные данные' });
+    return;
       }
       else {
         res.send(card);
@@ -67,7 +70,7 @@ const putLikeCard = (req, res) => {
     return res.send(card);
   })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Не верный id'});
       }
       else {

@@ -59,7 +59,10 @@ const patchUser = (req, res) => {
 
   User.findByIdAndUpdate(req.user._id, { name, about },{ new: true })
     .then((user) => {
-      res.send(user);
+      if (!user) {
+        return res.status(404).send({ message: 'Не найдено id'});
+      }
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -77,7 +80,10 @@ const patchUserAvatar = (req, res) => {
 
   User.findByIdAndUpdate(req.user._id, { avatar },{ new: true })
     .then((user) => {
-      res.send(user);
+      if (!user) {
+        return res.status(404).send({ message: 'Не найдено id'});
+      }
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
