@@ -10,7 +10,7 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Карточка не найдена'});
+        return res.status(400).send({ message: 'Неверные данные'});
       }
       else {
         return res.status(500).send({ message: 'Карточка не найдена'});
@@ -40,12 +40,11 @@ const getUser = (req, res) => {
 
   User.findById(userId)
     .then((user) => {
-      if (user) return res.send({ user });
-      return res.status(404).send({ message: 'Не найдено'});
+     res.send({ user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Не найдено'});
+        return res.status(404).send({ message: 'Не найдено'});
       }
       else {
         return res.status(500).send({ message: 'Некорректно'});
@@ -54,22 +53,21 @@ const getUser = (req, res) => {
 }
 
 const patchUser = (req, res) => {
+  const userId = req.user._id;
+  const { name , about } = req.body;
 
-  const { name, about } = req.body;
-
-  User.findByIdAndUpdate(req.user._id, { name, about },{ new: true })
+  User.findByIdAndUpdate( userId,
+    { name , about },
+    { new: true})
     .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: 'Не найдено id'});
-      }
       return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Карточка не найдена'});
+        return res.status(400).send({ message: 'Неверные данные'});
       }
       else {
-        return res.status(500).send({ message: 'Карточка не найдена'});
+        return res.status(500).send({ message: 'ошибка'});
       }
     })
 }

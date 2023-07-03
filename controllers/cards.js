@@ -43,7 +43,7 @@ const deleteCard = (req, res) => {
     .then((card) => {
       if (!card) {
         res
-      .status(400)
+      .status(404)
       .send({ message: 'Невалидные данные' });
     return;
       }
@@ -52,7 +52,12 @@ const deleteCard = (req, res) => {
       }
     })
     .catch((err) => {
-     return res.status(500).send(`message:Произошла ошибка ${err}"`);
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Карточка не найдена'});
+      }
+      else {
+       return res.status(500).send({ message: '500'});
+      }
     })
 }
 
@@ -87,11 +92,11 @@ const deleteLikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      res.send({ data: card })
+      res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError'){
-        return res.status(400).send({ message: 'Произошла ошибка'});
+      if (err.name === 'CastError'){
+        return res.status(404).send({ message: 'Удаление лайка у карточки с несуществующим в БД id'});
       }
       else {
        return res.status(500).send({ message: 'Произошла ошибка'});
