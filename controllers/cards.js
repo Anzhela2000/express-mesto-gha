@@ -48,7 +48,7 @@ const deleteCard = (req, res) => {
       }
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err instanceof mongoose.Error.CastError) {
         res.status(ERROR_CODE).send({ message: 'Некорректные данные' });
       } else {
         res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
