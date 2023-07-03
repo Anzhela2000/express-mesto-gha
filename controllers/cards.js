@@ -92,11 +92,14 @@ const deleteLikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      res.send(card);
+      if (!card) {
+        return res.status(404).send({ message: 'Не найдено id'});
+      }
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError'){
-        return res.status(404).send({ message: 'Удаление лайка у карточки с несуществующим в БД id'});
+        return res.status(400).send({ message: 'Удаление лайка у карточки с несуществующим в БД id'});
       }
       else {
        return res.status(500).send({ message: 'Произошла ошибка'});
