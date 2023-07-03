@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
 
 const ERROR_CODE = 400;
@@ -7,7 +8,6 @@ const NOT_FOUND_ERROR_CODE = 404;
 const GENERAL_ERROR_CODE = 500;
 
 const createUser = (req, res) => {
-
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
@@ -15,33 +15,25 @@ const createUser = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные при создании пользователя. ' });
+      if (err instanceof mongoose.Error.ValidationError) {
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные при создании пользователя. ' });
+      } else {
+        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
       }
-      else {
-        return res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
-      }
-    })
-}
+    });
+};
 
 const getUsers = (req, res) => {
-
   User.find({})
     .then((users) => {
       res.send(users);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные при создании пользователя. ' });
-      }
-      else {
-        return res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
-      }
-    })
-}
+    .catch(() => {
+      res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
+    });
+};
 
 const getUser = (req, res) => {
-
   const { userId } = req.params;
 
   User.findById(userId)
@@ -52,22 +44,23 @@ const getUser = (req, res) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
+      } else {
+        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
       }
-      else {
-        return res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
-      }
-    })
-}
+    });
+};
 
 const patchUser = (req, res) => {
   const userId = req.user._id;
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(userId,
+  User.findByIdAndUpdate(
+    userId,
     { name, about },
-    { new: true, runValidators: true })
+    { new: true, runValidators: true },
+  )
     .then((user) => {
       if (!user) {
         return res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Пользователь с указанным _id не найден. ' });
@@ -75,17 +68,15 @@ const patchUser = (req, res) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      if (err instanceof mongoose.Error.ValidationError) {
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      } else {
+        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
       }
-      else {
-        return res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
-      }
-    })
-}
+    });
+};
 
 const patchUserAvatar = (req, res) => {
-
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
@@ -96,19 +87,18 @@ const patchUserAvatar = (req, res) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
+      if (err instanceof mongoose.Error.ValidationError) {
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
+      } else {
+        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
       }
-      else {
-        return res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
-      }
-    })
-}
+    });
+};
 
 module.exports = {
   createUser,
   getUsers,
   getUser,
   patchUser,
-  patchUserAvatar
-}
+  patchUserAvatar,
+};

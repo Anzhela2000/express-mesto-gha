@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 
 const { ObjectId } = mongoose.Schema.Types;
@@ -8,13 +7,11 @@ const cardSchema = mongoose.Schema({
     type: String,
     required: true,
     minlength: 2,
-    maxlength: 30
+    maxlength: 30,
   },
   link: {
     type: String,
     required: true,
-    minlength: 2,
-    maxlength: 30
   },
   owner: {
     type: ObjectId,
@@ -28,9 +25,8 @@ const cardSchema = mongoose.Schema({
   }],
   createdAt: {
     type: Date,
-    required: true,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 const Card = mongoose.model('card', cardSchema);

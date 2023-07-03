@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Card = require('../models/card');
 
 const ERROR_CODE = 400;
@@ -7,7 +8,6 @@ const NOT_FOUND_ERROR_CODE = 404;
 const GENERAL_ERROR_CODE = 500;
 
 const createCard = (req, res) => {
-
   const { name, link } = req.body;
   const userId = req.user._id;
 
@@ -16,33 +16,25 @@ const createCard = (req, res) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные при создании карточки.' });
+      if (err instanceof mongoose.Error.ValidationError) {
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные при создании карточки.' });
+      } else {
+        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
       }
-      else {
-        return res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
-      }
-    })
-}
+    });
+};
 
 const getCards = (req, res) => {
-
   Card.find({})
     .then((cards) => {
       res.send(cards);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERROR_CODE).send({ message: ' Переданы некорректные данные при создании карточки.' });
-      }
-      else {
-        return res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
-      }
-    })
-}
+    .catch(() => {
+      res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
+    });
+};
 
 const deleteCard = (req, res) => {
-
   const { cardId } = req.params;
 
   Card.findByIdAndRemove(cardId)
@@ -51,24 +43,20 @@ const deleteCard = (req, res) => {
         res
           .status(NOT_FOUND_ERROR_CODE)
           .send({ message: 'Карточка с указанным _id не найдена.' });
-        return;
-      }
-      else {
+      } else {
         res.send(card);
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(ERROR_CODE).send({ message: 'Некорректные данные' });
+      if (err instanceof mongoose.Error.ValidationError) {
+        res.status(ERROR_CODE).send({ message: 'Некорректные данные' });
+      } else {
+        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
       }
-      else {
-        return res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
-      }
-    })
-}
+    });
+};
 
 const putLikeCard = (req, res) => {
-
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -81,17 +69,15 @@ const putLikeCard = (req, res) => {
       return res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка. ' });
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка. ' });
+      } else {
+        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
       }
-      else {
-        return res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
-      }
-    })
-}
+    });
+};
 
 const deleteLikeCard = (req, res) => {
-
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -104,19 +90,18 @@ const deleteLikeCard = (req, res) => {
       return res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка. ' });
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка. ' });
+      } else {
+        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
       }
-      else {
-        return res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
-      }
-    })
-}
+    });
+};
 
 module.exports = {
   createCard,
   getCards,
   deleteCard,
   putLikeCard,
-  deleteLikeCard
-}
+  deleteLikeCard,
+};
