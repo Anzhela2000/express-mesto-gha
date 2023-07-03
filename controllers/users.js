@@ -61,7 +61,7 @@ const patchUser = (req, res) => {
 
   User.findByIdAndUpdate( userId,
     { name , about },
-    { new: true})
+    { new: true, runValidators: true})
     .then((user) => {
       return res.send(user);
     })
@@ -79,7 +79,7 @@ const patchUserAvatar = (req, res) => {
 
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { avatar },{ new: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true})
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: 'Не найдено id'});
