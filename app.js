@@ -19,7 +19,7 @@ app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
 app.use('*', function (req, res) {
-  res.status(500).send({ message: 'Такой страницы нет' });
+  res.status(404).send({ message: 'Такой страницы нет' });
 });
 
 app.listen(3000, () => {
