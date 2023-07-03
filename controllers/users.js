@@ -41,13 +41,13 @@ const getUser = (req, res) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        return res.status(400).send({ message: 'Не найдено id'});
+        return res.status(404).send({ message: 'Не найдено id'});
       }
       return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Не найдено'});
+        return res.status(400).send({ message: 'Не найдено'});
       }
       else {
         return res.status(500).send({ message: 'Некорректно'});
