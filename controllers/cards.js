@@ -1,13 +1,10 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
+const GeneralErrorCode = require('../middlewares/GeneralErrorCode');
+const NotFoundError = require('../middlewares/notFoundError');
+const ValidationError = require('../middlewares/ValidationError');
 
-const ERROR_CODE = 400;
-
-const NOT_FOUND_ERROR_CODE = 404;
-
-const GENERAL_ERROR_CODE = 500;
-
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const userId = req.user._id;
 
@@ -17,46 +14,46 @@ const createCard = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные при создании карточки.' });
+        next(new ValidationError('Переданы некорректные данные при создании карточки.'));
       } else {
-        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
+        next(new GeneralErrorCode('Произошла ошибка'));
       }
     });
 };
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => {
       res.send(cards);
     })
     .catch(() => {
-      res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
+      next(new GeneralErrorCode('Произошла ошибка'));
     });
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-
+  const owner = req.params;
   Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
-        res
-          .status(NOT_FOUND_ERROR_CODE)
-          .send({ message: 'Карточка с указанным _id не найдена.' });
+        throw new NotFoundError('Карточка с указанным _id не найдена.');
+      } if (card.owner.toString() !== owner) {
+        throw new NotFoundError('Карточка недоступна для удаления.');
       } else {
         res.send(card);
       }
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(ERROR_CODE).send({ message: 'Некорректные данные' });
+        next(new ValidationError('Некорректные данные'));
       } else {
-        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
+        next(new GeneralErrorCode('Произошла ошибка'));
       }
     });
 };
 
-const putLikeCard = (req, res) => {
+const putLikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -64,20 +61,19 @@ const putLikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Передан несуществующий _id карточки.' });
+        throw new NotFoundError('Передан несуществующий _id карточки.');
       }
       return res.send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка. ' });
-      } else {
-        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка.' });
+        next(new ValidationError('Переданы некорректные данные для постановки/снятии лайка.'));
+        next(new GeneralErrorCode('Произошла ошибка'));
       }
     });
 };
 
-const deleteLikeCard = (req, res) => {
+const deleteLikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -85,15 +81,15 @@ const deleteLikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Передан несуществующий _id карточки.' });
+        throw new NotFoundError('Передан несуществующий _id карточки.');
       }
       return res.send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка. ' });
+        next(new ValidationError('Переданы некорректные данные для постановки/снятии лайка.'));
       } else {
-        res.status(GENERAL_ERROR_CODE).send({ message: 'Произошла ошибка' });
+        next(new GeneralErrorCode('Произошла ошибка'));
       }
     });
 };
