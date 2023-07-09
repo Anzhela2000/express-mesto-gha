@@ -1,17 +1,15 @@
-// middlewares/auth.js
-
 const jwt = require('jsonwebtoken');
 
-module.exports = (req, res, next) => {
+function auth(req, res, next) {
   const { authorization } = req.headers;
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+  if (!authorization) {
     res
       .status(401)
-      .send({ message: 'Необходима авторизация' });
+      .send('authorization');
   }
 
-  const token = authorization.replace('Bearer ', '');
+  const token = authorization;
   let payload;
   try {
     payload = jwt.verify(token, 'some-secret-key');
@@ -24,4 +22,6 @@ module.exports = (req, res, next) => {
   req.user = payload;
 
   next();
-};
+}
+
+module.exports = auth;

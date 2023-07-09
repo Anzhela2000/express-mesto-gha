@@ -4,4 +4,4 @@ class GeneralErrorCode extends Error {
     this.statusCode = 500;
   }
 }
-module.exports = GeneralErrorCode;
+module.exports = { GeneralErrorCode };

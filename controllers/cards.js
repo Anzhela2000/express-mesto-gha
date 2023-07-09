@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-const GeneralErrorCode = require('../middlewares/GeneralErrorCode');
-const NotFoundError = require('../middlewares/notFoundError');
-const ValidationError = require('../middlewares/ValidationError');
+const GeneralErrorCode = require('../errors/GeneralErrorCode');
+const NotFoundError = require('../errors/NotFoundError');
+const ValidationError = require('../errors/ValidationError');
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;

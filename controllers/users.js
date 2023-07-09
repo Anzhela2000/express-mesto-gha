@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const NotFoundError = require('../middlewares/notFoundError');
-const ValidationError = require('../middlewares/ValidationError');
-const GeneralErrorCode = require('../middlewares/GeneralErrorCode');
+const { NotFoundError } = require('../errors/NotFoundError');
+const { ValidationError } = require('../errors/ValidationError');
+const { GeneralErrorCode } = require('../errors/GeneralErrorCode');
 const User = require('../models/user');
 
 const login = (req, res) => {
@@ -12,7 +12,7 @@ const login = (req, res) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.status(200).cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send({ jwt: token });
+      res.status(200).header('auth-token', token).send({ token });
     })
     .catch((err) => {
       res
@@ -21,7 +21,7 @@ const login = (req, res) => {
     });
 };
 
-const createUser = (req, res, next) => {
+const register = (req, res, next) => {
   const {
     email, name, about, avatar,
   } = req.body;
@@ -37,7 +37,11 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new ValidationError('Переданы некорректные данные при создании пользователя. '));
-      } else {
+      }
+      if (err.code === 11000) {
+        next(new ValidationError('Пользователь с таким email уже зарегистрирован'));
+      }
+      else {
         next(new GeneralErrorCode('Произошла ошибка'));
       }
     });
@@ -134,7 +138,7 @@ const getMe = (req, res, next) => {
 };
 
 module.exports = {
-  createUser,
+  register,
   getUsers,
   getUser,
   patchUser,
