@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { NotFoundError } = require('../errors/NotFoundError');
 const { ValidationError } = require('../errors/ValidationError');
 const { AutorizationError } = require('../errors/AutorizationError');
+const { ConflictError } = require('../errors/ConflictError');
 const User = require('../models/user');
 
 const login = (req, res, next) => {
@@ -23,7 +24,7 @@ const register = (req, res, next) => {
   const {
     email, password, name, about, avatar,
   } = req.body;
-  bcrypt.hash(password.toString(), 10)
+  bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
@@ -34,7 +35,7 @@ const register = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError(err));
       } else if (err.code === 11000) {
-        next(new AutorizationError('Пользователь с таким email уже зарегистрирован'));
+        next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
       } else {
         next(err);
       }
