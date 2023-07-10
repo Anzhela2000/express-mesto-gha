@@ -15,8 +15,8 @@ const login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.status(200).header('auth-token', token).send({ token });
     })
-    .catch((err) => {
-      next(new AutorizationError(err.message));
+    .catch(() => {
+      next(new AutorizationError('Пользователь не зарегистрирован'));
     });
 };
 
