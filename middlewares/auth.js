@@ -1,12 +1,11 @@
 const jwt = require('jsonwebtoken');
+const AutorizationError = require('../errors/AutorizationError');
 
 function auth(req, res, next) {
   const { authorization } = req.headers;
 
   if (!authorization) {
-    res
-      .status(401)
-      .send('authorization');
+    next(new AutorizationError('Пользователь не зарегистрирован'));
   }
 
   const token = authorization;
@@ -14,9 +13,7 @@ function auth(req, res, next) {
   try {
     payload = jwt.verify(token, 'some-secret-key');
   } catch (err) {
-    res
-      .status(401)
-      .send({ message: 'Необходима авторизация' });
+    next(new AutorizationError('Пользователь не зарегистрирован'));
   }
 
   req.user = payload;
