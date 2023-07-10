@@ -5,10 +5,9 @@ const { NotFoundError } = require('../errors/NotFoundError');
 const { ValidationError } = require('../errors/ValidationError');
 const { GeneralErrorCode } = require('../errors/GeneralErrorCode');
 const { AutorizationError } = require('../errors/AutorizationError');
-const { EmailError } = require('../errors/EmailErrors');
 const User = require('../models/user');
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -17,9 +16,7 @@ const login = (req, res) => {
       res.status(200).header('auth-token', token).send({ token });
     })
     .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
+      next(new AutorizationError(err.message));
     });
 };
 
@@ -37,7 +34,7 @@ const register = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.code === 400) {
+      if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные при создании пользователя. '));
       } else if (err.code === 11000) {
         next(new AutorizationError('Пользователь с таким email уже зарегистрирован'));
