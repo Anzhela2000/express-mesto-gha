@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const auth = require('./middlewares/auth');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-const errors = require('./middlewares/errors')
+const errors = require('./middlewares/errors');
 
 const NOT_FOUND_ERROR_CODE = 404;
 

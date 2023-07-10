@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { NotFoundError } = require('../errors/NotFoundError');
 const { ValidationError } = require('../errors/ValidationError');
-const { GeneralErrorCode } = require('../errors/GeneralErrorCode');
 const { AutorizationError } = require('../errors/AutorizationError');
 const User = require('../models/user');
 
@@ -25,11 +24,9 @@ const register = (req, res, next) => {
     email, name, about, avatar,
   } = req.body;
   bcrypt.hash(req.body.password, 10)
-    .then((hash) => User.create(
-      {
-        name, about, avatar, email, password: hash,
-      },
-    ))
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }, { new: true, runValidators: true }))
     .then((user) => {
       res.send(user);
     })
@@ -39,7 +36,7 @@ const register = (req, res, next) => {
       } else if (err.code === 11000) {
         next(new AutorizationError('Пользователь с таким email уже зарегистрирован'));
       } else {
-        next(new GeneralErrorCode('Произошла ошибка'));
+        next(err);
       }
     });
 };
@@ -49,9 +46,7 @@ const getUsers = (req, res, next) => {
     .then((users) => {
       res.send(users);
     })
-    .catch(() => {
-      next(new GeneralErrorCode('Произошла ошибка'));
-    });
+    .catch((next));
 };
 
 const getUser = (req, res, next) => {
@@ -68,7 +63,7 @@ const getUser = (req, res, next) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new ValidationError('Переданы некорректные данные.'));
       } else {
-        next(new GeneralErrorCode('Произошла ошибка'));
+        next(err);
       }
     });
 };
@@ -92,7 +87,7 @@ const patchUser = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new ValidationError('Переданы некорректные данные при обновлении профиля.'));
       } else {
-        next(new GeneralErrorCode('Произошла ошибка'));
+        next(err);
       }
     });
 };
@@ -111,7 +106,7 @@ const patchUserAvatar = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new ValidationError('Переданы некорректные данные при обновлении аватара.'));
       } else {
-        next(new GeneralErrorCode('Произошла ошибка'));
+        next(err);
       }
     });
 };
@@ -129,7 +124,7 @@ const getMe = (req, res, next) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new ValidationError('Переданы некорректные данные.'));
       } else {
-        next(new GeneralErrorCode('Произошла ошибка'));
+        next(err);
       }
     });
 };
