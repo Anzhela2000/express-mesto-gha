@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { NotFoundError } = require('../errors/NotFoundError');
 const { ValidationError } = require('../errors/ValidationError');
 const { GeneralErrorCode } = require('../errors/GeneralErrorCode');
+const { AutorizationError } = require('../errors/AutorizationError');
 const User = require('../models/user');
 
 const login = (req, res) => {
@@ -39,9 +40,8 @@ const register = (req, res, next) => {
         next(new ValidationError('Переданы некорректные данные при создании пользователя. '));
       }
       if (err.code === 11000) {
-        next(new ValidationError('Пользователь с таким email уже зарегистрирован'));
-      }
-      else {
+        next(new AutorizationError('Пользователь с таким email уже зарегистрирован'));
+      } else {
         next(new GeneralErrorCode('Произошла ошибка'));
       }
     });
