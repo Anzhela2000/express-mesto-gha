@@ -21,18 +21,18 @@ const login = (req, res, next) => {
 
 const register = (req, res, next) => {
   const {
-    email, name, about, avatar,
+    email, password, name, about, avatar,
   } = req.body;
-  bcrypt.hash(req.body.password, 10)
+  bcrypt.hash(password.toString(), 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
-    }, { new: true, runValidators: true }))
+    }))
     .then((user) => {
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные при создании пользователя. '));
+        next(new ValidationError(err));
       } else if (err.code === 11000) {
         next(new AutorizationError('Пользователь с таким email уже зарегистрирован'));
       } else {

@@ -17,6 +17,9 @@ const app = express();
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 app.use('/', bodyParser.json());
+app.use(express.urlencoded({
+  extended: true,
+}));
 
 app.post('/signup', register);
 app.post('/signin', login);
