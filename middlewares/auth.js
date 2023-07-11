@@ -11,7 +11,7 @@ function auth(req, res, next) {
   const token = authorization;
   let payload;
   try {
-    payload = jwt.verify(token, 'some-secret-key');
+    payload = jwt.verify(token, process.env.SECRET_KEY);
   } catch (err) {
     next(new AutorizationError('Пользователь не зарегистрирован'));
   }

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -6,7 +7,7 @@ const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const errors = require('./middlewares/errors');
 
-const NOT_FOUND_ERROR_CODE = 404;
+const { NOT_FOUND_ERROR_CODE } = require('./errors/NotFoundError');
 
 const {
   register, login,
@@ -14,7 +15,7 @@ const {
 
 const app = express();
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+mongoose.connect(process.env.DB_CONN);
 
 app.use('/', bodyParser.json());
 app.use(express.urlencoded({
@@ -35,6 +36,6 @@ app.use('*', (req, res) => {
 
 app.use(errors);
 
-app.listen(3000, () => {
-  console.log('сервер запущен');
+app.listen(process.env.PORT, () => {
+  console.log('Сервер запущен');
 });

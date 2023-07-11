@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-const GeneralErrorCode = require('../errors/GeneralErrorCode');
-const NotFoundError = require('../errors/NotFoundError');
-const ValidationError = require('../errors/ValidationError');
+const { NotFoundError } = require('../errors/NotFoundError');
+const { ValidationError } = require('../errors/ValidationError');
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -16,7 +15,7 @@ const createCard = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new ValidationError('Переданы некорректные данные при создании карточки.'));
       } else {
-        next(new GeneralErrorCode('Произошла ошибка'));
+        next(err);
       }
     });
 };
@@ -26,8 +25,8 @@ const getCards = (req, res, next) => {
     .then((cards) => {
       res.send(cards);
     })
-    .catch(() => {
-      next(new GeneralErrorCode('Произошла ошибка'));
+    .catch((err) => {
+      next(err);
     });
 };
 
@@ -48,7 +47,7 @@ const deleteCard = (req, res, next) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new ValidationError('Некорректные данные'));
       } else {
-        next(new GeneralErrorCode('Произошла ошибка'));
+        next(err);
       }
     });
 };
@@ -68,7 +67,7 @@ const putLikeCard = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new ValidationError('Переданы некорректные данные для постановки/снятии лайка.'));
-        next(new GeneralErrorCode('Произошла ошибка'));
+        next(err);
       }
     });
 };
@@ -89,7 +88,7 @@ const deleteLikeCard = (req, res, next) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new ValidationError('Переданы некорректные данные для постановки/снятии лайка.'));
       } else {
-        next(new GeneralErrorCode('Произошла ошибка'));
+        next(err);
       }
     });
 };
