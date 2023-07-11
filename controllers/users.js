@@ -33,7 +33,7 @@ const register = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError(err));
+        next(new ValidationError('Данные не прошли валидацию'));
       } if (err.code === 11000) {
         next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
       } else {
