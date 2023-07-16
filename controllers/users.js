@@ -113,7 +113,7 @@ const patchUserAvatar = (req, res, next) => {
 };
 
 const getMe = (req, res, next) => {
-  const userId = req.user._id;
+  const { userId } = req.user;
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -123,7 +123,7 @@ const getMe = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next(new ValidationError('Переданы некорректные данные.'));
+        next(new ValidationError('Переданы некорректные данные при обновлении аватара.'));
       } else {
         next(err);
       }
