@@ -26,10 +26,22 @@ const register = (req, res, next) => {
   } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
+      email,
+      password: hash,
+      name,
+      about,
+      avatar,
+    }), console.log(password))
     .then((user) => {
-      res.send(user);
+      const { _id } = user;
+
+      return res.status(201).send({
+        email,
+        name,
+        about,
+        avatar,
+        _id,
+      });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -113,7 +125,7 @@ const patchUserAvatar = (req, res, next) => {
 };
 
 const getMe = (req, res, next) => {
-  const { userId } = req.user;
+  const userId = req.user._id;
   User.findById(userId)
     .then((user) => {
       if (!user) {
